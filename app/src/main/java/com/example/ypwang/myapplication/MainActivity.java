@@ -1,6 +1,7 @@
 package com.example.ypwang.myapplication;
 
 import android.content.Intent;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -22,6 +23,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
+
+
 public class MainActivity extends AppCompatActivity {
     public final static String EXTRA_MESSAGE = "com.mycompany.myfirstapp.MESSAGE";
 
@@ -33,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     EditText editTextEmail;
     EditText editTextPassword;
+    WebApiReceiver api;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -53,6 +57,9 @@ public class MainActivity extends AppCompatActivity {
                 Log.v("QB","Create session error");
             }
         });
+
+        api = new WebApiReceiver(this);
+
 
     }
 
@@ -87,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
             QBUsers.signIn(user, new QBEntityCallback<QBUser>() {
                 @Override
                 public void onSuccess(QBUser user, Bundle args) {
+
                     Log.v("Login:QBlogin", "OK");
                 }
 
@@ -99,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
     }
     public void buttonFbLoginClicked(View view) {
         Toast.makeText(MainActivity.this, "FB Login clicked", Toast.LENGTH_SHORT).show();
+        api.doInBackground();
     }
     public void buttonSignClicked(View view) {
         Toast.makeText(MainActivity.this, "Signup clicked", Toast.LENGTH_SHORT).show();

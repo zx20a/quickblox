@@ -48,6 +48,7 @@ public class WebApiReceiver extends AsyncTask<Pair<String, String>, Void, String
     public Activity activity;
     public ProgressBar progressBar;
     HttpsURLConnection conn;
+//    HttpURLConnection conn;
     TrustManager[] trust;
 
     public WebApiReceiver( Activity _activity){
@@ -120,6 +121,7 @@ public class WebApiReceiver extends AsyncTask<Pair<String, String>, Void, String
 
         try {
             URL url = new URL(apiUrl);
+
             conn = (HttpsURLConnection) url.openConnection();
             conn.setConnectTimeout(15000);
             conn.setConnectTimeout(10000);
@@ -140,7 +142,7 @@ public class WebApiReceiver extends AsyncTask<Pair<String, String>, Void, String
                 writer.flush();
                 writer.close();
                 os.close();
-               // conn.connect();
+                //int responseCode=conn.getResponseCode();
 
 
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -150,7 +152,7 @@ public class WebApiReceiver extends AsyncTask<Pair<String, String>, Void, String
                     stringBuilder.append(line).append("\n");
                 }
                 bufferedReader.close();
-                Log.v("reader", stringBuilder.toString());
+                //Log.v("reader", stringBuilder.toString());
                 return stringBuilder.toString();
             }
             finally{

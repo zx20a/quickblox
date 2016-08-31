@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     EditText editTextPassword;
     WebApiReceiver api;
     String apiUrl = "https://220.133.185.190:8889";
+    String testApiUrl = "https://httpbin.org";
     List<Pair<String,String>> param = new ArrayList<Pair<String,String>>();
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,11 +94,14 @@ public class MainActivity extends AppCompatActivity {
         Log.v("Login:", "Click");
         String email = editTextEmail.getText().toString();
         String password = editTextPassword.getText().toString();
-        param.add(new Pair("URL", apiUrl+"/login"));
+        param.add(new Pair("URL", testApiUrl+"/post"));
+        //param.add(new Pair("URL", apiUrl+"/login"));
         param.add(new Pair("email","admin@gmail.com"));
         param.add(new Pair("password","123456"));
 
-        api.execute(param.get(0), param.get(1), param.get(2));
+        //api.execute(param.get(0), param.get(1), param.get(2));
+        new WebApiReceiver(this).execute(param.get(0), param.get(1), param.get(2));
+
         param.clear();
         /*
         if(isAccountFormatValid(email, password)) {
@@ -127,19 +131,36 @@ public class MainActivity extends AppCompatActivity {
 
         if(isAccountFormatValid(email,password)) {
             // Register new user
-            final QBUser user = new QBUser(email, password);
+//            final QBUser user = new QBUser(email, password);
+//
+//            QBUsers.signUp(user, new QBEntityCallback<QBUser>() {
+//                @Override
+//                public void onSuccess(QBUser user, Bundle args) {
+//                    Log.v("Login:QB signup", "OK");
+//                }
+//
+//                @Override
+//                public void onError(QBResponseException error) {
+//                    Log.v("Login:QB signup", "Failed");
+//                }
+//            });
+            //param.add(new Pair("URL", testApiUrl+"/post"));
+            param.add(new Pair("URL", apiUrl+"/registeredApi"));
+            param.add(new Pair("AccountId", "zxa@ggmail.com"));
+            param.add(new Pair("AliasName", "zxa"));
+            param.add(new Pair("Sex", "1"));
+            param.add(new Pair("Birthday", "19001111"));
+            param.add(new Pair("Phone", "0912345678"));
+            param.add(new Pair("Email","zxa@ggmail.com"));
+            param.add(new Pair("password","zxa"));
 
-            QBUsers.signUp(user, new QBEntityCallback<QBUser>() {
-                @Override
-                public void onSuccess(QBUser user, Bundle args) {
-                    Log.v("Login:QB signup", "OK");
-                }
+            //api.execute(param.get(0), param.get(1), param.get(2));
+            new WebApiReceiver(this).execute(param.get(0),
+                    param.get(1), param.get(2), param.get(3),
+                    param.get(4), param.get(5), param.get(6),
+                    param.get(7));
 
-                @Override
-                public void onError(QBResponseException error) {
-                    Log.v("Login:QB signup", "Failed");
-                }
-            });
+            param.clear();
         }
     }
     public void buttonLossPwClicked(View view) {

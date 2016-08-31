@@ -78,6 +78,7 @@
         android:id="@+id/progressBar"
         android:layout_below="@+id/buttonLossPw"
         android:layout_toRightOf="@+id/buttonSign"
-        android:layout_toEndOf="@+id/buttonSign" />
+        android:layout_toEndOf="@+id/buttonSign"
+        android:visibility="invisible" />
 
 </RelativeLayout>

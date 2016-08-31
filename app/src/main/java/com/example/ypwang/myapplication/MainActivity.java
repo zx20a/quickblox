@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
-import android.util.Log;
+
 import android.view.View;
 import android.view.ViewDebug;
 import android.widget.EditText;
@@ -19,6 +19,10 @@ import com.quickblox.core.exception.QBResponseException;
 import com.quickblox.users.QBUsers;
 import com.quickblox.users.model.QBUser;
 
+import java.util.List;
+import android.util.Log;
+import android.util.Pair;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,11 +41,15 @@ public class MainActivity extends AppCompatActivity {
     EditText editTextEmail;
     EditText editTextPassword;
     WebApiReceiver api;
+    String apiUrl = "https://220.133.185.190:8889";
+    List<Pair<String,String>> param = new ArrayList<Pair<String,String>>();
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         editTextEmail = (EditText)findViewById(R.id.editTextEmail);
         editTextPassword = (EditText)findViewById(R.id.editTextPassword);
+
 
         QBSettings.getInstance().init(getApplicationContext(), APP_ID, AUTH_KEY, AUTH_SECRET);
         QBSettings.getInstance().setAccountKey(ACCOUNT_KEY);
@@ -59,8 +67,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         api = new WebApiReceiver(this);
-
-
     }
 
     private boolean isAccountFormatValid(String email, String passwd){
@@ -84,30 +90,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void buttonLoginClicked(View view) {
-
+        Log.v("Login:", "Click");
         String email = editTextEmail.getText().toString();
         String password = editTextPassword.getText().toString();
+        param.add(new Pair("URL", apiUrl+"/login"));
+        param.add(new Pair("email","admin@gmail.com"));
+        param.add(new Pair("password","123456"));
 
-        if(isAccountFormatValid(email,password)) {
+        api.execute(param.get(0), param.get(1), param.get(2));
+        param.clear();
+        /*
+        if(isAccountFormatValid(email, password)) {
             final QBUser user = new QBUser("zx20a", password);
             // Login
             QBUsers.signIn(user, new QBEntityCallback<QBUser>() {
                 @Override
                 public void onSuccess(QBUser user, Bundle args) {
-
                     Log.v("Login:QBlogin", "OK");
                 }
-
                 @Override
                 public void onError(QBResponseException error) {
                     Log.v("Login:QBlogin", "Failed");
                 }
             });
-        }
+        }*/
     }
     public void buttonFbLoginClicked(View view) {
         Toast.makeText(MainActivity.this, "FB Login clicked", Toast.LENGTH_SHORT).show();
-        api.doInBackground();
+        //api.doInBackground();
     }
     public void buttonSignClicked(View view) {
         Toast.makeText(MainActivity.this, "Signup clicked", Toast.LENGTH_SHORT).show();

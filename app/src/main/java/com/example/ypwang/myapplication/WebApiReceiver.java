@@ -31,6 +31,8 @@ import java.net.URLEncoder;
 import android.util.Log;
 import android.util.Pair;
 
+import org.json.JSONObject;
+
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -43,51 +45,20 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+
 public class WebApiReceiver extends AsyncTask<Pair<String, String>, Void, String> {
 
     public Activity activity;
     public ProgressBar progressBar;
-    HttpsURLConnection conn;
-//    HttpURLConnection conn;
+//    HttpsURLConnection conn;
+    HttpURLConnection conn;
     TrustManager[] trust;
+    JSONObject jsonObj;
 
     public WebApiReceiver( Activity _activity){
 
         this.activity = _activity;
         this.progressBar = (ProgressBar)this.activity.findViewById(R.id.progressBar);
-        trust = new TrustManager[] { new X509TrustManager() {
-            @Override
-            public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-                Log.i("TrustManager", "checkClientTrusted");
-            }
-
-            @Override
-            public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-                Log.i("TrustManager", "checkServerTrusted");
-            }
-
-            @Override
-            public X509Certificate[] getAcceptedIssuers() {
-                //return new X509Certificate[0];
-                return null;
-            }
-        }};
-
-        try {
-            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
-
-                @Override
-                public boolean verify(String s, SSLSession sslSession) {
-                    return true;
-                }
-
-            });
-            SSLContext sc = SSLContext.getInstance("TLS");
-            sc.init(null, trust, new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
 //other initializations...
 
@@ -104,6 +75,7 @@ public class WebApiReceiver extends AsyncTask<Pair<String, String>, Void, String
     protected String doInBackground(Pair<String, String>... param) {
         String apiUrl = "null";
         List<Pair<String,String>> params = new ArrayList<Pair<String,String>>();
+        JSONObject jsonObj = new JSONObject();
 
         for (Pair<String, String> pair : param){
             Log.v("api param:", pair.first);
@@ -114,37 +86,45 @@ public class WebApiReceiver extends AsyncTask<Pair<String, String>, Void, String
             }
             else {
                 params.add(pair);
+                try {
+                    jsonObj.put(pair.first, pair.second);
+                }
+                catch (Exception e){
+                    Log.e("JSON put",  e.getMessage(), e);
+                    return "JSON put failed";
+                }
             }
         }
         if(apiUrl.equals("null"))
             return null;
 
         try {
-            URL url = new URL(apiUrl);
 
-            conn = (HttpsURLConnection) url.openConnection();
+            URL url = new URL(apiUrl);
+            conn = (HttpURLConnection) url.openConnection();
             conn.setConnectTimeout(15000);
             conn.setConnectTimeout(10000);
-//            conn.setRequestProperty("Content-length", "0");
+            conn.setRequestProperty("content-type","application/json;charset=utf-8");
+            conn.setRequestProperty("Connection", "Keep-Alive");
+            conn.setRequestProperty("Protocol-Version", "HTTP/1.1");
             conn.setRequestMethod("POST");
             conn.setDoInput(true);
             conn.setDoOutput(true);
             conn.setUseCaches(false);
             conn.setAllowUserInteraction(false);
-            //conn.connect();
-
+            conn.connect();
             try {
-                OutputStream os = conn.getOutputStream();
                 BufferedWriter writer = new BufferedWriter(
-                        new OutputStreamWriter(os, "UTF-8"));
-
-                writer.write(getQuery(params));
+                        new OutputStreamWriter(conn.getOutputStream()));
+                writer.write(jsonObj.toString());
+//                writer.write(getQuery(params));
                 writer.flush();
                 writer.close();
-                os.close();
-                //int responseCode=conn.getResponseCode();
 
-
+//                int responseCode=conn.getResponseCode();
+//                Log.v("resp", Integer.toString(responseCode));
+                Integer length = conn.getContentLength();
+                Log.v("length", Integer.toString(length));
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 StringBuilder stringBuilder = new StringBuilder();
                 String line;
@@ -152,7 +132,6 @@ public class WebApiReceiver extends AsyncTask<Pair<String, String>, Void, String
                     stringBuilder.append(line).append("\n");
                 }
                 bufferedReader.close();
-                //Log.v("reader", stringBuilder.toString());
                 return stringBuilder.toString();
             }
             finally{
@@ -171,7 +150,6 @@ public class WebApiReceiver extends AsyncTask<Pair<String, String>, Void, String
         }
         progressBar.setVisibility(View.GONE);
         Log.i("INFO", response);
-        //responseView.setText(response);
     }
 
     private String getQuery(List<Pair<String,String>> params) throws UnsupportedEncodingException

@@ -41,8 +41,8 @@ public class MainActivity extends AppCompatActivity {
     EditText editTextEmail;
     EditText editTextPassword;
     WebApiReceiver api;
-    String apiUrl = "https://220.133.185.190:8889";
-    String testApiUrl = "https://httpbin.org";
+    String apiUrl = "http://220.133.185.190:8889";
+    String testApiUrl = "http://httpbin.org";
     List<Pair<String,String>> param = new ArrayList<Pair<String,String>>();
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,23 +51,23 @@ public class MainActivity extends AppCompatActivity {
         editTextEmail = (EditText)findViewById(R.id.editTextEmail);
         editTextPassword = (EditText)findViewById(R.id.editTextPassword);
 
+//
+//        QBSettings.getInstance().init(getApplicationContext(), APP_ID, AUTH_KEY, AUTH_SECRET);
+//        QBSettings.getInstance().setAccountKey(ACCOUNT_KEY);
+//
+//        QBAuth.createSession(new QBEntityCallback<QBSession>() {
+//            @Override
+//            public void onSuccess(QBSession session, Bundle params) {
+//                Log.v("QB","Create session OK");
+//            }
+//
+//            @Override
+//            public void onError(QBResponseException error) {
+//                Log.v("QB","Create session error");
+//            }
+//        });
 
-        QBSettings.getInstance().init(getApplicationContext(), APP_ID, AUTH_KEY, AUTH_SECRET);
-        QBSettings.getInstance().setAccountKey(ACCOUNT_KEY);
-
-        QBAuth.createSession(new QBEntityCallback<QBSession>() {
-            @Override
-            public void onSuccess(QBSession session, Bundle params) {
-                Log.v("QB","Create session OK");
-            }
-
-            @Override
-            public void onError(QBResponseException error) {
-                Log.v("QB","Create session error");
-            }
-        });
-
-        api = new WebApiReceiver(this);
+//        api = new WebApiReceiver(this);
     }
 
     private boolean isAccountFormatValid(String email, String passwd){
@@ -94,8 +94,8 @@ public class MainActivity extends AppCompatActivity {
         Log.v("Login:", "Click");
         String email = editTextEmail.getText().toString();
         String password = editTextPassword.getText().toString();
-        param.add(new Pair("URL", testApiUrl+"/post"));
-        //param.add(new Pair("URL", apiUrl+"/login"));
+//        param.add(new Pair("URL", testApiUrl+"/post"));
+        param.add(new Pair("URL", apiUrl+"/login"));
         param.add(new Pair("email","admin@gmail.com"));
         param.add(new Pair("password","123456"));
 
